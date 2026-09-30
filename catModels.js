@@ -1,6 +1,25 @@
 // 3D Procedural Models and Textures for Cat Memes in Three.js
 
 const CatModels = {
+    loadedModels: {},
+
+    // Preload ready-made GLB 3D models
+    initLoader() {
+        if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined') {
+            const loader = new THREE.GLTFLoader();
+            loader.load('assets/maxwell.glb', (gltf) => {
+                this.loadedModels['maxwell'] = gltf.scene;
+                console.log("✅ 3D GLB Model for Maxwell loaded successfully!");
+                // If game is active and player is currently Maxwell / Oiia, update view
+                if (window.game && window.game.currentTierIndex === 2) {
+                    window.game.updatePlayerModel();
+                }
+            }, undefined, (err) => {
+                console.warn("⚠️ Maxwell GLB could not be loaded, using high-detail procedural model.", err);
+            });
+        }
+    },
+
     // Face Texture Generators using HTML5 2D Canvas
     createFaceCanvas(memeType, state = 0) {
         const canvas = document.createElement('canvas');
@@ -396,54 +415,70 @@ const CatModels = {
         parent.add(tail);
     },
 
-    // TIER 2: OIIA OIIA CAT (Fast Spinning Cat)
+    // TIER 2: OIIA OIIA CAT (Fast Spinning Maxwell Cat)
     buildOiiaCat(parent) {
         // Inner spinning group so entire body spins dynamically!
         const spinGroup = new THREE.Group();
         spinGroup.name = "oiia_spin_group";
         parent.add(spinGroup);
 
-        const blackMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.5 });
-        const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
-        const faceTex = this.createFaceCanvas('oiia');
-        const faceMat = new THREE.MeshStandardMaterial({ map: faceTex, roughness: 0.5 });
+        if (this.loadedModels && this.loadedModels['maxwell']) {
+            // Authentic 3D GLB Maxwell model!
+            const maxwellInstance = this.loadedModels['maxwell'].clone();
+            maxwellInstance.scale.set(0.09, 0.09, 0.09);
+            maxwellInstance.position.set(0, 0.05, 0);
+            maxwellInstance.rotation.y = Math.PI; // Face forward along track
+            maxwellInstance.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            spinGroup.add(maxwellInstance);
+        } else {
+            // Procedural fallback
+            const blackMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.5 });
+            const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+            const faceTex = this.createFaceCanvas('oiia');
+            const faceMat = new THREE.MeshStandardMaterial({ map: faceTex, roughness: 0.5 });
 
-        // Body
-        const bodyGeo = new THREE.SphereGeometry(0.7, 16, 16);
-        bodyGeo.scale(0.85, 1.1, 0.85);
-        const body = new THREE.Mesh(bodyGeo, blackMat);
-        body.position.y = 0.85;
-        body.castShadow = true;
-        spinGroup.add(body);
+            // Body
+            const bodyGeo = new THREE.SphereGeometry(0.7, 16, 16);
+            bodyGeo.scale(0.85, 1.1, 0.85);
+            const body = new THREE.Mesh(bodyGeo, blackMat);
+            body.position.y = 0.85;
+            body.castShadow = true;
+            spinGroup.add(body);
 
-        // White belly
-        const bellyGeo = new THREE.SphereGeometry(0.5, 12, 12);
-        bellyGeo.scale(0.7, 0.9, 0.4);
-        const belly = new THREE.Mesh(bellyGeo, whiteMat);
-        belly.position.set(0, 0.85, 0.45);
-        spinGroup.add(belly);
+            // White belly
+            const bellyGeo = new THREE.SphereGeometry(0.5, 12, 12);
+            bellyGeo.scale(0.7, 0.9, 0.4);
+            const belly = new THREE.Mesh(bellyGeo, whiteMat);
+            belly.position.set(0, 0.85, 0.45);
+            spinGroup.add(belly);
 
-        // Head
-        const headGeo = new THREE.SphereGeometry(0.68, 20, 20);
-        const head = new THREE.Mesh(headGeo, faceMat);
-        head.position.set(0, 1.55, 0.1);
-        head.castShadow = true;
-        spinGroup.add(head);
+            // Head
+            const headGeo = new THREE.SphereGeometry(0.68, 20, 20);
+            const head = new THREE.Mesh(headGeo, faceMat);
+            head.position.set(0, 1.55, 0.1);
+            head.castShadow = true;
+            spinGroup.add(head);
 
-        // Ears
-        const earGeo = new THREE.ConeGeometry(0.24, 0.45, 4);
-        const earL = new THREE.Mesh(earGeo, blackMat);
-        earL.position.set(-0.38, 2.1, 0.1);
-        earL.rotation.z = 0.35;
-        spinGroup.add(earL);
+            // Ears
+            const earGeo = new THREE.ConeGeometry(0.24, 0.45, 4);
+            const earL = new THREE.Mesh(earGeo, blackMat);
+            earL.position.set(-0.38, 2.1, 0.1);
+            earL.rotation.z = 0.35;
+            spinGroup.add(earL);
 
-        const earR = new THREE.Mesh(earGeo, blackMat);
-        earR.position.set(0.38, 2.1, 0.1);
-        earR.rotation.z = -0.35;
-        spinGroup.add(earR);
+            const earR = new THREE.Mesh(earGeo, blackMat);
+            earR.position.set(0.38, 2.1, 0.1);
+            earR.rotation.z = -0.35;
+            spinGroup.add(earR);
+        }
 
         // Speed spin trail ring
-        const ringGeo = new THREE.TorusGeometry(1.0, 0.05, 8, 30);
+        const ringGeo = new THREE.TorusGeometry(1.2, 0.05, 8, 30);
         const ringMat = new THREE.MeshBasicMaterial({ color: 0x00cec9, transparent: true, opacity: 0.7 });
         const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = Math.PI / 2;
@@ -665,3 +700,6 @@ const MEME_TIERS = [
 
 window.CatModels = CatModels;
 window.MEME_TIERS = MEME_TIERS;
+
+// Initialize model loader as soon as scripts load
+CatModels.initLoader();
