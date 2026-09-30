@@ -1,0 +1,593 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #0b0e14;
+    font-family: 'Nunito', sans-serif;
+    color: #ffffff;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* === HUD === */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    z-index: 10;
+}
+
+.hud-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    pointer-events: auto;
+}
+
+/* Meme Status Card */
+.meme-status-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(18, 24, 38, 0.85);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 8px 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.meme-avatar-badge {
+    font-size: 28px;
+    background: linear-gradient(135deg, #ff7675, #d63031);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 10px rgba(214, 48, 49, 0.4);
+}
+
+.meme-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.meme-name-tag {
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    color: #ffeaa7;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.meme-tier-tag {
+    font-size: 11px;
+    font-weight: 900;
+    color: #81ecec;
+    letter-spacing: 1px;
+}
+
+/* Evolution Progress Bar */
+.evolution-container {
+    flex: 1;
+    max-width: 320px;
+    background: rgba(18, 24, 38, 0.85);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 8px 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.evolution-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 900;
+    color: #b2bec3;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+#next-meme-name {
+    color: #fdcb6e;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 14px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar-fill {
+    width: 25%;
+    height: 100%;
+    background: linear-gradient(90deg, #00cec9, #0984e3, #6c5ce7);
+    border-radius: 8px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(0, 206, 201, 0.6);
+}
+
+/* Score Card */
+.score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(18, 24, 38, 0.85);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 16px;
+    padding: 6px 18px;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
+}
+
+.score-label {
+    font-size: 10px;
+    font-weight: 900;
+    color: #fdcb6e;
+    letter-spacing: 1px;
+}
+
+.score-value {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 220, 0, 0.8);
+}
+
+/* Sound button */
+.icon-btn {
+    background: rgba(18, 24, 38, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, background 0.2s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.08);
+    background: rgba(45, 52, 54, 0.9);
+}
+
+/* Control Hint */
+#control-hint {
+    align-self: center;
+    margin-bottom: 25px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+    font-weight: 700;
+    color: #dfe6e9;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.pulse-anim {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* Floating Alerts / Notifications */
+#floating-notifications {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.floating-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: 32px;
+    font-weight: bold;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    animation: floatUp 1.2s forwards cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.floating-positive {
+    color: #55efc4;
+    text-shadow: 0 0 15px rgba(85, 239, 196, 0.8);
+}
+
+.floating-negative {
+    color: #ff7675;
+    text-shadow: 0 0 15px rgba(255, 118, 117, 0.8);
+}
+
+.floating-evolve {
+    color: #ffeaa7;
+    font-size: 38px;
+    text-shadow: 0 0 20px rgba(253, 203, 110, 1);
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.6);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(0) scale(1.1);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(-30px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.8);
+    }
+}
+
+/* === OVERLAY SCREENS === */
+.overlay-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.96) 100%);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.modal-box {
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 28px;
+    padding: 35px 30px;
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.brand-badge {
+    background: linear-gradient(90deg, #fdcb6e, #f39c12);
+    color: #2d3436;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+
+.game-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 42px;
+    line-height: 1.1;
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.title-highlight {
+    background: linear-gradient(135deg, #00cec9, #a29bfe, #fd79a8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    max-width: 440px;
+}
+
+/* Memes Preview Bar */
+.memes-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.preview-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.preview-icon {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.preview-arrow {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Instructions card */
+.instructions-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 14px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.instruction-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #e2e8f0;
+}
+
+.badge {
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.badge.green {
+    background: rgba(46, 204, 113, 0.25);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+.badge.red {
+    background: rgba(231, 76, 60, 0.25);
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.badge.yellow {
+    background: rgba(241, 196, 15, 0.25);
+    color: #f1c40f;
+    border: 1px solid #f1c40f;
+}
+
+/* Buttons */
+.btn-primary {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 48px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0, 206, 201, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 14px 30px rgba(0, 206, 201, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+.pulse-btn {
+    animation: buttonPulse 2s infinite ease-in-out;
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 0 8px 24px rgba(0, 206, 201, 0.4);
+    }
+    50% {
+        box-shadow: 0 12px 35px rgba(0, 206, 201, 0.8);
+    }
+}
+
+.btn-secondary {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50px;
+    padding: 14px 36px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Victory Screen Specifics */
+.trophy-icon {
+    font-size: 54px;
+    animation: bounce 1s infinite alternate ease-in-out;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+}
+
+.result-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 38px;
+    letter-spacing: 1px;
+}
+
+.win-text {
+    background: linear-gradient(135deg, #ffeaa7, #fdcb6e, #fab1a0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.lose-text {
+    color: #ff7675;
+}
+
+.final-avatar {
+    font-size: 50px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+    padding: 10px;
+}
+
+.final-meme-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: #00cec9;
+    margin-top: -10px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+.stat-card {
+    background: rgba(15, 23, 42, 0.7);
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-card.full-width {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(0, 206, 201, 0.2));
+    border: 2px solid rgba(0, 206, 201, 0.5);
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.8px;
+}
+
+.stat-value {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: #ffffff;
+    margin-top: 4px;
+}
+
+.stat-value.highlight {
+    font-size: 34px;
+    color: #ffeaa7;
+    text-shadow: 0 0 15px rgba(253, 203, 110, 0.7);
+}
+
+.crying-cat-icon {
+    font-size: 60px;
+}
+
+.lose-desc {
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .game-title {
+        font-size: 32px;
+    }
+    .hud-top {
+        gap: 8px;
+    }
+    .meme-status-card {
+        padding: 6px 10px;
+    }
+    .evolution-container {
+        max-width: 150px;
+    }
+    .score-card {
+        padding: 4px 12px;
+    }
+    .score-value {
+        font-size: 18px;
+    }
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cat Meme Evolution 3D - Supercar Legends Style</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Canvas Confetti for victory celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <!-- 3D Canvas will be injected here -->
+
+        <!-- Game HUD -->
+        <div id="hud" class="hidden">
+            <div class="hud-top">
+                <!-- Current Meme Card -->
+                <div class="meme-status-card">
+                    <div class="meme-avatar-badge" id="hud-avatar">🐱</div>
+                    <div class="meme-info">
+                        <div class="meme-name-tag" id="hud-meme-name">HUH? CAT</div>
+                        <div class="meme-tier-tag" id="hud-meme-tier">TIER 1</div>
+                    </div>
+                </div>
+
+                <!-- Evolution Progress Bar -->
+                <div class="evolution-container">
+                    <div class="evolution-labels">
+                        <span>EVOLUÇÃO</span>
+                        <span id="next-meme-name">PRÓXIMO: POP CAT</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="evolution-progress"></div>
+                    </div>
+                </div>
+
+                <!-- Score / Meme Power Counter -->
+                <div class="score-card">
+                    <span class="score-label">PODER MEME</span>
+                    <span class="score-value" id="hud-score">50</span>
+                </div>
+
+                <!-- Audio Toggle Button -->
+                <button id="sound-btn" class="icon-btn" title="Ligar/Desligar Som">🔊</button>
+            </div>
+
+            <!-- Floating score / reaction alerts container -->
+            <div id="floating-notifications"></div>
+
+            <!-- Swipe/Control Hint -->
+            <div id="control-hint" class="pulse-anim">
+                <span>◀ Arraste ou use A / D para controlar ▶</span>
+            </div>
+        </div>
+
+        <!-- Start Screen Overlay -->
+        <div id="start-screen" class="overlay-screen">
+            <div class="modal-box glow-box">
+                <div class="brand-badge">🐱 MEME RUNNER 3D 🐾</div>
+                <h1 class="game-title">CAT MEME<br><span class="title-highlight">EVOLUTION</span></h1>
+                <p class="subtitle">Passe pelos portais certos, desvie dos pepinos e evolua até o <strong>GATO GIGACHAD</strong>!</p>
+
+                <div class="memes-preview">
+                    <div class="preview-item">
+                        <div class="preview-icon">❓</div>
+                        <span>Huh Cat</span>
+                    </div>
+                    <div class="preview-arrow">➔</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">😺</div>
+                        <span>Pop Cat</span>
+                    </div>
+                    <div class="preview-arrow">➔</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">🌪️</div>
+                        <span>Oiia Oiia</span>
+                    </div>
+                    <div class="preview-arrow">➔</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">😈</div>
+                        <span>Muhehehe</span>
+                    </div>
+                    <div class="preview-arrow">➔</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">🍌</div>
+                        <span>Banana Cat</span>
+                    </div>
+                    <div class="preview-arrow">➔</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">👑</div>
+                        <span>GigaChad Cat</span>
+                    </div>
+                </div>
+
+                <div class="instructions-card">
+                    <div class="instruction-row">
+                        <span class="badge green">+ / ×</span>
+                        <span>Portais Verdes aumentam seus pontos e evoluem o gato!</span>
+                    </div>
+                    <div class="instruction-row">
+                        <span class="badge red">- / ÷</span>
+                        <span>Portais Vermelhos regridem seu meme!</span>
+                    </div>
+                    <div class="instruction-row">
+                        <span class="badge yellow">🥒 / 🤖</span>
+                        <span>Desvie de pepinos e aspiradores de pó!</span>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="btn-primary pulse-btn">JOGAR AGORA</button>
+            </div>
+        </div>
+
+        <!-- Victory Screen Overlay -->
+        <div id="victory-screen" class="overlay-screen hidden">
+            <div class="modal-box glow-box win-box">
+                <div class="trophy-icon">🏆</div>
+                <h2 class="result-title win-text">FINAL ÉPICO!</h2>
+                <div class="final-avatar" id="win-avatar">👑</div>
+                <div class="final-meme-name" id="win-meme-name">GIGACHAD CAT</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">PONTOS BASE</div>
+                        <div class="stat-value" id="win-base-score">1200</div>
+                    </div>
+                    <div class="stat-card multiplier-card">
+                        <div class="stat-label">RAMPA MULTIPLICADORA</div>
+                        <div class="stat-value" id="win-multiplier">x5.0</div>
+                    </div>
+                    <div class="stat-card full-width">
+                        <div class="stat-label">PODER MEME FINAL</div>
+                        <div class="stat-value highlight" id="win-final-score">6000</div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="next-level-btn" class="btn-primary">PRÓXIMA FASE ➔</button>
+                    <button id="restart-win-btn" class="btn-secondary">JOGAR NOVAMENTE 🔄</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Screen Overlay -->
+        <div id="gameover-screen" class="overlay-screen hidden">
+            <div class="modal-box glow-box lose-box">
+                <div class="crying-cat-icon">😿</div>
+                <h2 class="result-title lose-text">MIAU... FIM DE JOGO!</h2>
+                <p class="lose-desc">Seus pontos de meme caíram a zero e seu gato não aguentou a humilhação!</p>
+                
+                <div class="stat-card full-width">
+                    <div class="stat-label">DISTÂNCIA PERCORRIDA</div>
+                    <div class="stat-value" id="lose-distance">64%</div>
+                </div>
+
+                <button id="restart-lose-btn" class="btn-primary">TENTAR NOVAMENTE 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="audio.js"></script>
+    <script src="catModels.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
