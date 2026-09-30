@@ -1,5 +1,7 @@
 # 🐱 Cat Meme Evolution 3D (Supercar Legends Style) 🐾
 
+🎮 **Jogue Online no GitHub Pages:** [https://luizmathias1.github.io/CatGame/](https://luizmathias1.github.io/CatGame/)
+
 Um jogo 3D de navegador no estilo **Supercar Legends / Gate Runner**, estrelando os memes de gato mais famosos da internet:
 - **Tier 0:** Huh? Cat ❓ (O gatinho confuso)
 - **Tier 1:** Pop Cat 😺 (Abre e fecha a boca fazendo "Pop!")
